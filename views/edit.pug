@@ -1,0 +1,20 @@
+html
+  head
+    title Edit Review
+  body
+    h1 Edit Book Review
+    form(action=`/edit/${review.id}` method="POST")
+      label(for="title") Title:
+      input(type="text" name="title" value=review.title required)
+      br
+      label(for="author") Author:
+      input(type="text" name="author" value=review.author required)
+      br
+      label(for="genre") Genre:
+      input(type="text" name="genre" value=review.genre required)
+      br
+      label(for="review") Review:
+      textarea(name="review" required) #{review.review}
+      br
+      button(type="submit") Update
+    a(href="/") Back to Home

@@ -1,0 +1,20 @@
+html
+  head
+    title Add New Review
+  body
+    h1 Add a New Book Review
+    form(action="/reviews" method="POST")
+      label(for="title") Title:
+      input(type="text" name="title" required)
+      br
+      label(for="author") Author:
+      input(type="text" name="author" required)
+      br
+      label(for="genre") Genre:
+      input(type="text" name="genre" required)
+      br
+      label(for="review") Review:
+      textarea(name="review" required)
+      br
+      button(type="submit") Submit
+    a(href="/") Back to Home
