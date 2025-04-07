@@ -1,38 +1,51 @@
-let reviews = []; // Replace with database in a real app
+const Review = require('../models/review');
 
 class ReviewService {
-  static getAllReviews() {
-    return reviews;
+  // Read all reviews
+  static async getAllReviews() {
+    try {
+      return await Review.find();
+    } catch (err) {
+      throw new Error('Failed to fetch reviews');
+    }
   }
 
-  static getReviewById(id) {
-    return reviews.find(review => review.id === id);
+  // Read one review by ID
+  static async getReviewById(id) {
+    try {
+      return await Review.findById(id);
+    } catch (err) {
+      throw new Error('Review not found');
+    }
   }
 
-  static createReview({ title, author, genre, review }) {
-    const newReview = {
-      id: reviews.length + 1, // Simple ID generation
-      title,
-      author,
-      genre,
-      review
-    };
-    reviews.push(newReview);
-    return newReview;
+  // Create a review
+  static async createReview({ title, author, genre, review }) {
+    try {
+      const newReview = new Review({ title, author, genre, review });
+      return await newReview.save();
+    } catch (err) {
+      throw new Error('Failed to create review');
+    }
   }
 
-  static updateReview(id, updatedData) {
-    const reviewIndex = reviews.findIndex(review => review.id === id);
-    if (reviewIndex === -1) return null;
-    reviews[reviewIndex] = { ...reviews[reviewIndex], ...updatedData };
-    return reviews[reviewIndex];
+  // Update a review
+  static async updateReview(id, updatedData) {
+    try {
+      return await Review.findByIdAndUpdate(id, updatedData, { new: true });
+    } catch (err) {
+      throw new Error('Failed to update review');
+    }
   }
 
-  static deleteReview(id) {
-    const reviewIndex = reviews.findIndex(review => review.id === id);
-    if (reviewIndex === -1) return false;
-    reviews.splice(reviewIndex, 1);
-    return true;
+  // Delete a review
+  static async deleteReview(id) {
+    try {
+      const result = await Review.findByIdAndDelete(id);
+      return !!result; // Returns true if deleted, false if not found
+    } catch (err) {
+      throw new Error('Failed to delete review');
+    }
   }
 }
 

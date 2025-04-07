@@ -10,6 +10,6 @@ block content
       p Author: #{review.author}
       p Genre: #{review.genre}
       p Review: #{review.review}
-      a(href=`/reviews/${review.id}/edit`) Edit
-      form(action=`/reviews/${review.id}?_method=DELETE`, method="POST")
+      a(href=`/reviews/${review._id}/edit`) Edit
+      form(action=`/reviews/${review._id}?_method=DELETE`, method="POST")
         button(type="submit") Delete

@@ -3,11 +3,11 @@ const router = express.Router();
 const ReviewController = require('../controllers/reviews');
 
 // CRUD Routes
-router.get('/new', ReviewController.newReviewForm); // Render new review form
-router.get('/:id/edit', ReviewController.editReviewForm); // Render edit form
-router.get('/', ReviewController.getAllReviews); // List all reviews
-router.post('/', ReviewController.createReview); // Create a review
-router.put('/:id', ReviewController.updateReview); // Update a review
-router.delete('/:id', ReviewController.deleteReview); // Delete a review
+router.get('/new', ReviewController.newReviewForm);
+router.get('/:id/edit', ReviewController.editReviewForm);
+router.get('/', ReviewController.getAllReviews);
+router.post('/', ReviewController.createReview);
+router.put('/:id', ReviewController.updateReview);
+router.delete('/:id', ReviewController.deleteReview);
 
 module.exports = router;

@@ -2,7 +2,7 @@ extends layout.pug
 
 block content
   h1 Edit Book Review
-  form(action=`/reviews/${review.id}?_method=PUT`, method="POST")
+  form(action=`/reviews/${review._id}?_method=PUT`, method="POST")
     div
       label(for="title") Title:
       input(type="text", name="title", value=review.title, required)
