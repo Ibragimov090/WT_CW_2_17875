@@ -1,20 +1,19 @@
-html
-  head
-    title Add New Review
-  body
-    h1 Add a New Book Review
-    form(action="/reviews" method="POST")
+extends layout.pug
+
+block content
+  h1 Create New Book Review
+  form(action="/reviews", method="POST")
+    div
       label(for="title") Title:
-      input(type="text" name="title" required)
-      br
+      input(type="text", name="title", required)
+    div
       label(for="author") Author:
-      input(type="text" name="author" required)
-      br
+      input(type="text", name="author", required)
+    div
       label(for="genre") Genre:
-      input(type="text" name="genre" required)
-      br
+      input(type="text", name="genre", required)
+    div
       label(for="review") Review:
-      textarea(name="review" required)
-      br
+      textarea(name="review", required)
+    div
       button(type="submit") Submit
-    a(href="/") Back to Home

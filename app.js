@@ -1,55 +1,31 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const path = require('path');
+const methodOverride = require('method-override'); // For PUT/DELETE in forms
 const app = express();
 
-app.set('view engine', 'pug');
-app.use(bodyParser.urlencoded({ extended: true }));
+// Middlewares
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method')); // Enable PUT/DELETE via POST
 
-let reviews = [];
+// View engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
 // Routes
-app.get('/', (req, res) => {
-  res.render('index', { reviews: reviews });
+const indexRouter = require('./routes/index');
+const reviewsRouter = require('./routes/reviews');
+
+app.use('/', indexRouter);
+app.use('/reviews', reviewsRouter);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
-app.get('/new', (req, res) => {
-  res.render('new');
-});
-
-app.post('/reviews', (req, res) => {
-  const { title, author, genre, review } = req.body;
-  reviews.push({ id: Date.now(), title, author, genre, review });
-  res.redirect('/');
-});
-
-// Edit route (GET)
-app.get('/edit/:id', (req, res) => {
-  const review = reviews.find(r => r.id == req.params.id);
-  if (review) {
-    res.render('edit', { review });
-  } else {
-    res.status(404).send('Review not found');
-  }
-});
-
-// Edit route (POST)
-app.post('/edit/:id', (req, res) => {
-  const { title, author, genre, review } = req.body;
-  const index = reviews.findIndex(r => r.id == req.params.id);
-  if (index !== -1) {
-    reviews[index] = { id: reviews[index].id, title, author, genre, review };
-    res.redirect('/');
-  } else {
-    res.status(404).send('Review not found');
-  }
-});
-
-// Delete route
-app.post('/delete/:id', (req, res) => {
-  reviews = reviews.filter(r => r.id != req.params.id);
-  res.redirect('/');
-});
-
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

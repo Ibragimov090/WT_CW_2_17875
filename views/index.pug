@@ -1,19 +1,15 @@
-doctype html
-html
-  head
-    title Book Reviews
-  body
-    h1 Book Reviews
-    a(href="/new") Add New Review
-    if reviews.length
-      ul
-        each review in reviews
-          li
-            strong #{review.title} 
-            | by #{review.author} (#{review.genre})
-            p #{review.review}
-            a(href=`/edit/${review.id}`) Edit
-            form(action=`/delete/${review.id}` method="POST" style="display:inline;")
-              button(type="submit") Delete
-    else
-      p No reviews yet!
+extends layout.pug
+
+block content
+  h1 Book Reviews
+  p This web application was created to fulfill Web Technology module’s requirements and does not represent an actual company or service
+  a(href="/reviews/new") Add New Review
+  each review in reviews
+    div
+      h2= review.title
+      p Author: #{review.author}
+      p Genre: #{review.genre}
+      p Review: #{review.review}
+      a(href=`/reviews/${review.id}/edit`) Edit
+      form(action=`/reviews/${review.id}?_method=DELETE`, method="POST")
+        button(type="submit") Delete
