@@ -1,18 +1,19 @@
 {
-  "name": "webbek",
+  "name": "book-review-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
+  "description": "A dynamic web application for managing book reviews, built for Web Technologies (4BUIS011C) coursework.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["express", "node.js", "pug", "mongoose", "web-app", "crud"],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
   "dependencies": {
-    "express": "^5.1.0",
+    "express": "^4.17.1",
+    "express-validator": "^7.2.1",
     "method-override": "^3.0.0",
     "mongoose": "^8.13.2",
     "pug": "^3.0.3"
