@@ -12,6 +12,7 @@ class ReviewController {
   }
 
   static newReviewForm(req, res) {
+    if (!req.user) return res.redirect('/auth/login');
     res.render('new', { errors: [], review: {} });
   }
 
@@ -19,6 +20,9 @@ class ReviewController {
     try {
       const review = await ReviewService.getReviewById(req.params.id);
       if (!review) return res.status(404).send('Review not found');
+      if (!req.user || review.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).send('You can only edit your own reviews');
+      }
       res.render('edit', { review, errors: [] });
     } catch (err) {
       res.status(500).send(err.message);
@@ -26,40 +30,22 @@ class ReviewController {
   }
 
   static async createReview(req, res) {
-    // Validation rules with custom length checks
+    if (!req.user) return res.redirect('/auth/login');
     const validations = [
-      body('title')
-        .notEmpty().withMessage('Title is required')
-        .isLength({ min: 2, max: 100 }).withMessage('Title must be between 2 and 100 characters')
-        .trim().escape(),
-      body('author')
-        .notEmpty().withMessage('Author is required')
-        .isLength({ min: 2, max: 50 }).withMessage('Author must be between 2 and 50 characters')
-        .trim().escape(),
-      body('genre')
-        .notEmpty().withMessage('Genre is required')
-        .isLength({ min: 2, max: 50 }).withMessage('Genre must be between 2 and 50 characters')
-        .trim().escape(),
-      body('review')
-        .notEmpty().withMessage('Review is required')
-        .isLength({ min: 10, max: 500 }).withMessage('Review must be between 10 and 500 characters')
-        .trim().escape(),
+      body('title').notEmpty().withMessage('Title is required').isLength({ min: 2, max: 100 }).withMessage('Title must be between 2 and 100 characters').trim().escape(),
+      body('author').notEmpty().withMessage('Author is required').isLength({ min: 2, max: 50 }).withMessage('Author must be between 2 and 50 characters').trim().escape(),
+      body('genre').notEmpty().withMessage('Genre is required').isLength({ min: 2, max: 50 }).withMessage('Genre must be between 2 and 50 characters').trim().escape(),
+      body('review').notEmpty().withMessage('Review is required').isLength({ min: 10, max: 500 }).withMessage('Review must be between 10 and 500 characters').trim().escape(),
     ];
 
     try {
-      // Run validations
       await Promise.all(validations.map(validation => validation.run(req)));
       const errors = validationResult(req);
-
       if (!errors.isEmpty()) {
-        return res.status(400).render('new', {
-          errors: errors.array(),
-          review: req.body,
-        });
+        return res.status(400).render('new', { errors: errors.array(), review: req.body });
       }
-
       const { title, author, genre, review } = req.body;
-      await ReviewService.createReview({ title, author, genre, review });
+      await ReviewService.createReview({ title, author, genre, review, userId: req.user._id });
       res.redirect('/reviews');
     } catch (err) {
       res.status(500).send(err.message);
@@ -67,42 +53,27 @@ class ReviewController {
   }
 
   static async updateReview(req, res) {
-    // Validation rules with custom length checks (same as create)
     const validations = [
-      body('title')
-        .notEmpty().withMessage('Title is required')
-        .isLength({ min: 2, max: 100 }).withMessage('Title must be between 2 and 100 characters')
-        .trim().escape(),
-      body('author')
-        .notEmpty().withMessage('Author is required')
-        .isLength({ min: 2, max: 50 }).withMessage('Author must be between 2 and 50 characters')
-        .trim().escape(),
-      body('genre')
-        .notEmpty().withMessage('Genre is required')
-        .isLength({ min: 2, max: 50 }).withMessage('Genre must be between 2 and 50 characters')
-        .trim().escape(),
-      body('review')
-        .notEmpty().withMessage('Review is required')
-        .isLength({ min: 10, max: 500 }).withMessage('Review must be between 10 and 500 characters')
-        .trim().escape(),
+      body('title').notEmpty().withMessage('Title is required').isLength({ min: 2, max: 100 }).withMessage('Title must be between 2 and 100 characters').trim().escape(),
+      body('author').notEmpty().withMessage('Author is required').isLength({ min: 2, max: 50 }).withMessage('Author must be between 2 and 50 characters').trim().escape(),
+      body('genre').notEmpty().withMessage('Genre is required').isLength({ min: 2, max: 50 }).withMessage('Genre must be between 2 and 50 characters').trim().escape(),
+      body('reviewText').notEmpty().withMessage('Review is required').isLength({ min: 10, max: 500 }).withMessage('Review must be between 10 and 500 characters').trim().escape(), // Renamed to reviewText
     ];
 
     try {
-      // Run validations
+      const existingReview = await ReviewService.getReviewById(req.params.id); // Renamed to avoid conflict
+      if (!existingReview) return res.status(404).send('Review not found');
+      if (!req.user || existingReview.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).send('You can only edit your own reviews');
+      }
       await Promise.all(validations.map(validation => validation.run(req)));
       const errors = validationResult(req);
-
       if (!errors.isEmpty()) {
-        const review = await ReviewService.getReviewById(req.params.id);
-        return res.status(400).render('edit', {
-          errors: errors.array(),
-          review: { ...review.toObject(), ...req.body },
-        });
+        return res.status(400).render('edit', { errors: errors.array(), review: { ...existingReview.toObject(), ...req.body } });
       }
-
-      const { title, author, genre, review } = req.body;
+      const { title, author, genre, reviewText } = req.body; // Renamed to reviewText
       const id = req.params.id;
-      const updatedReview = await ReviewService.updateReview(id, { title, author, genre, review });
+      const updatedReview = await ReviewService.updateReview(id, { title, author, genre, review: reviewText }); // Pass reviewText as review
       if (!updatedReview) return res.status(404).send('Review not found');
       res.redirect('/reviews');
     } catch (err) {
@@ -112,6 +83,11 @@ class ReviewController {
 
   static async deleteReview(req, res) {
     try {
+      const review = await ReviewService.getReviewById(req.params.id);
+      if (!review) return res.status(404).send('Review not found');
+      if (!req.user || review.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).send('You can only delete your own reviews');
+      }
       const success = await ReviewService.deleteReview(req.params.id);
       if (!success) return res.status(404).send('Review not found');
       res.redirect('/reviews');

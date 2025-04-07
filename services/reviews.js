@@ -1,48 +1,43 @@
 const Review = require('../models/review');
 
 class ReviewService {
-  // Read all reviews
   static async getAllReviews() {
     try {
-      return await Review.find();
+      return await Review.find().populate('user', 'username');
     } catch (err) {
       throw new Error('Failed to fetch reviews');
     }
   }
 
-  // Read one review by ID
   static async getReviewById(id) {
     try {
-      return await Review.findById(id);
+      return await Review.findById(id).populate('user', 'username');
     } catch (err) {
       throw new Error('Review not found');
     }
   }
 
-  // Create a review
-  static async createReview({ title, author, genre, review }) {
+  static async createReview({ title, author, genre, review, userId }) {
     try {
-      const newReview = new Review({ title, author, genre, review });
+      const newReview = new Review({ title, author, genre, review, user: userId });
       return await newReview.save();
     } catch (err) {
       throw new Error('Failed to create review');
     }
   }
 
-  // Update a review
   static async updateReview(id, updatedData) {
     try {
-      return await Review.findByIdAndUpdate(id, updatedData, { new: true });
+      return await Review.findByIdAndUpdate(id, updatedData, { new: true }).populate('user', 'username');
     } catch (err) {
       throw new Error('Failed to update review');
     }
   }
 
-  // Delete a review
   static async deleteReview(id) {
     try {
       const result = await Review.findByIdAndDelete(id);
-      return !!result; // Returns true if deleted, false if not found
+      return !!result;
     } catch (err) {
       throw new Error('Failed to delete review');
     }

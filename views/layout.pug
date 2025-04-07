@@ -4,4 +4,9 @@ html
     title Book Review App
     link(rel="stylesheet", href="/styles/style.css")
   body
+    nav
+      if currentUser
+        p Welcome, #{currentUser.username} | #[a(href="/auth/logout") Logout]
+      else
+        p #[a(href="/auth/login") Login] | #[a(href="/auth/register") Register]
     block content

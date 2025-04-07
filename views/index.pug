@@ -3,13 +3,16 @@ extends layout.pug
 block content
   h1 Book Reviews
   p This web application was created to fulfill Web Technology module’s requirements and does not represent an actual company or service
-  a(href="/reviews/new") Add New Review
+  if currentUser
+    a(href="/reviews/new") Add New Review
   each review in reviews
     div
       h2= review.title
       p Author: #{review.author}
       p Genre: #{review.genre}
       p Review: #{review.review}
-      a(href=`/reviews/${review._id}/edit`) Edit
-      form(action=`/reviews/${review._id}?_method=DELETE`, method="POST")
-        button(type="submit") Delete
+      p By: #{review.user.username}
+      if currentUser && review.user._id.toString() === currentUser._id.toString()
+        a(href=`/reviews/${review._id}/edit`) Edit
+        form(action=`/reviews/${review._id}?_method=DELETE`, method="POST")
+          button(type="submit") Delete
