@@ -1,4 +1,4 @@
-This web application was developed as part of the Web Technologies module (4BUIS011C) at WIUT. It allows users to manage book reviews with full CRUD functionality: Create, Read, Update, and Delete reviews (including title, author, genre, and review text).
+This web application was developed as part of the Web Technologies module at WIUT. It allows users to manage book reviews with full CRUD functionality: Create, Read, Update, and Delete reviews (including title, author, genre, and review text).
 
 Features: all users can view reviews. Only logged-in users can add, edit, or delete their own reviews.
 Review input is validated (e.g., text must be between 10–500 characters).
@@ -16,7 +16,7 @@ Secure user authentication and session handling
 Input validation and error handling
 How to Run Locally
 
-Clone the repository:
+**Clone the repository:**
 git clone https://github.com/Ibragimov090/WT_CW_2_17875.git
 cd book-review-app
 
@@ -77,9 +77,9 @@ express-session      ^1.18.0
 Dev dependency:
 nodemon              ^3.1.9
 
-To install everything:
+**To install everything:**
 npm install express pug method-override mongoose express-validator passport passport-local bcrypt express-session
 
-Links
+**Links**
 GitHub: https://github.com/Ibragimov090/WT_CW_2_17875.git
-Live App: https://your-app-name.glitch.me
+Live App: https://book-review-app-17875.onrender.com
